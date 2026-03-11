@@ -1,6 +1,6 @@
 apiVersion: v2
 name: SimpleHelmChart
-description: A Helm chart for Kubernetes
+description: Launches nginx web page though tls ingress
 
 # A chart can be either an 'application' or a 'library' chart.
 #

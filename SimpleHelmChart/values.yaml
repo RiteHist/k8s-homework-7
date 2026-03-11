@@ -1,161 +1,35 @@
-# Default values for SimpleHelmChart.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+deployment:
+  replicas: 2
+  name: nginx-web
+  image:
+    name: nginx
+    tag: latest
 
-# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
-replicaCount: 1
+configmap:
+  name: web-config
+  html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>cool</title>
+    </head>
+    <body>
+      <h1>nice</h1>
+    </body>
+    </html>
 
-# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
-image:
-  repository: nginx
-  # This sets the pull policy for images.
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
-
-# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-imagePullSecrets: []
-# This is to override the chart name.
-nameOverride: ""
-fullnameOverride: ""
-
-# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
-serviceAccount:
-  # Specifies whether a service account should be created.
-  create: true
-  # Automatically mount a ServiceAccount's API credentials?
-  automount: true
-  # Annotations to add to the service account.
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template.
-  name: ""
-
-# This is for setting Kubernetes Annotations to a Pod.
-# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
-podAnnotations: {}
-# This is for setting Kubernetes Labels to a Pod.
-# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
-podLabels: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  type: ClusterIP
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  name: backend-svc
   port: 80
 
-# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+secret:
+  name: tls-secret
+  type: kubernetes.io/tls
+  key: |
+    LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2QUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktZd2dnU2lBZ0VBQW9JQkFRREpNdEpPRG8xL2p6dVAKbmhzZWM5bHFkQkgxa1JNUkJiZ25FRzgrQVpZNGFYbFZ5K1dQS0JhWUMySzFFQmhkV2ZTd2FiNlNXTUNuRmJONgpxY2NGVlRONC9nKzlzekZPQzlVOGdDN0wvN0xPRWU5OGxwaFlBVDBjQ0N1NUM3TS9tTHJ5UmVQUzVSTkJwNlg0Cmp0MFRrNmcvbkZhNzVkYmhmWTNCN1pBNVZRKzNtQW10UFhFYThJUURJdjFPSVpWMlFlNUI0RTQyWmNvcG5sMEkKZUNwNkZzRVA3ZkE4TG9lbnZVZXZhMG9UcjROOWplUGEzTG9lb1VzR0hyVDVNcWRsRmkweHZTbW85S1d4OTJaNgpRQlIrcld6b2s0ZHZrNHk2M1dEKzdxZGwyRVVNenpMTHQzUFNEQ052d1BnUWh0dndkRForUW1ZUjBRbUhCYVlWCmtJcVhmMFdiQWdNQkFBRUNnZ0VBRDFySERQajBXSU5NVnRvSWxNcmZrVTI1WHlYS3NEWmhCdTRzcHkxRTB4cE4KamJ3cFVVTU1jbDhRRWVSZ0Q2UEJWa05EclhTRGcxelhIU25leSt2a0tUd3VaRnBNRFhvK3RFYk9DM2lBbzFSZwpGQUNFTU5jclhEdk5abXBickNOU1JSSUxZSGxsL2xFMmkrRVBReUsyS09DY0IrdnkrYk4wd1pPSk9hN2hxNitXCmR1NVFmeXNqODl3bnpTQ1VjRUczV0VVMXRLZjI1ZU4wcEo1NnZYNE1sTGtPNDhNWGRjS2kzUks5MEZab1QwWisKTHJBUXFLbkgyNERGeEhGbGxZVkt1K3RjTDJHb0VHY2FodXduckJvbmprb3FWV3k0U1BIRHVNbFViSWpBUW9wTApJTTBSdm1La3p0SFkxUmh4L3dFdmJvdUZlbXBZVk81clljQTBaMjNEalFLQmdRRHp2ZWZPNldsZ1FWRksyWXJICkpLbk5Ja1Y4YWpuUGU0N2kveWpOQmZsdmIyTGVpVngxRmU5NEZWWDZtb0EwV0E0MzBYQUNhNWlqTHBwUzZ2S2YKamJ1NnJmbE1iUUptU2ZQWDR6UUxXQUZJbC90YytrQ0ZxZWlEaGNHZkF3T1lTWHBkeDBMbjVyQVdBZkt5MkF6Kwo1R29WcGhlVkdBeG9iRGlIM2JQZ1BSazZMUUtCZ1FEVFVTOXRqUW44clhlN1dOcGtVdDJ2SXMwTytGWGUveDVyCnh4SWhQSHpUWGNRSUtXcVhacm9tVXRRdkN6cVdmUTlta2V2a3lBWEp5ZEdPUGhsdm4wLytIQ21kS2dvdDVldG0KeEZ5WWRIVFVLWnNnMUxyUnY3L2hhWFduS3ZRcCtLbTlJb3F1ZnpaUnliTXBDK0ZIQUhacHBJeklWQ1RFVzFVTQpaYkdDUk1wRDV3S0JnRENvV1kxUnhVcUUzNUNjcXZxa1ZBMXlhUUswUmdRb2UxYlBienEybFp2c1ZZVnRVSHJEClBVSHdxSEJWeFlBdGovRU9xMWlnV0NGRFhXVnVKNjg0WVNDY09HZE1YNjFCMkI3aDZYTFdSN05STzhuTTMzS1AKZjY0NTFuUkM2c1hNN1ZPcFFxNyt1Mm81UzFUdWtuR1Q4YVdPdWFoMjI0dEJCMndBRXplUm11YWxBb0dBV0NIaQordmk0c3BhU2VpTjdxaDNaY1VLOWJVSHJabjdXYkRMeGY4VWZkblFEM3plT3lpaEErTnpRdS9JZDlFZWlWYkFFClJ6MlpGR2pFcW1PQjdranVidGZHRDFOS1BZeEgybXVKQnRpREpUMVpBcDlXYjBaZXU1OWxQMXd0eXhkM2kzZE4KaWF0cXR6KzlKaUJiUzJhSS9GUnhsdGRwSWkvSlQ4dFY5alBFZS84Q2dZQU9ocE83TGhHVklNWWtPT3BHRTdXdwpSeFdhWUF0azYzZ2V5d1o2QWZzTnB1QjN3NFpFaUFFTTlTeDE5NXBoa2JnT05NTnNLRUVZcUJxL3pYU0FEbjM2Ci9hNkFNV21DY0dvZjZUSlF2Wm0xUlJkcytubEw4bUx5ZkxmWkhIMjh5OTlFbE9YMis3cCs3U2phYWUwYmU5cmEKYlRjSFdSTldaUHFsUEpDa0o1dE5mQT09Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0=
+  crt: |
+    LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURHVENDQWdHZ0F3SUJBZ0lVR25STHVMS1dUeUpzblZkNVd0dW5OR1A1VENVd0RRWUpLb1pJaHZjTkFRRUwKQlFBd0hERWFNQmdHQTFVRUF3d1JiWGxoY0hBdVpYaGhiWEJzWlM1amIyMHdIaGNOTWpZd016QTJNREUwTkRJMApXaGNOTWpjd016QTJNREUwTkRJMFdqQWNNUm93R0FZRFZRUUREQkZ0ZVdGd2NDNWxlR0Z0Y0d4bExtTnZiVENDCkFTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTWt5MGs0T2pYK1BPNCtlR3g1ejJXcDAKRWZXUkV4RUZ1Q2NRYno0QmxqaHBlVlhMNVk4b0ZwZ0xZclVRR0YxWjlMQnB2cEpZd0tjVnMzcXB4d1ZWTTNqKwpENzJ6TVU0TDFUeUFMc3Yvc3M0UjczeVdtRmdCUFJ3SUs3a0xzeitZdXZKRjQ5TGxFMEducGZpTzNST1RxRCtjClZydmwxdUY5amNIdGtEbFZEN2VZQ2EwOWNScndoQU1pL1U0aGxYWkI3a0hnVGpabHlpbWVYUWg0S25vV3dRL3QKOER3dWg2ZTlSNjlyU2hPdmczMk40OXJjdWg2aFN3WWV0UGt5cDJVV0xURzlLYWowcGJIM1pucEFGSDZ0Yk9pVApoMitUakxyZFlQN3VwMlhZUlF6UE1zdTNjOUlNSTIvQStCQ0cyL0IwTm41Q1poSFJDWWNGcGhXUWlwZC9SWnNDCkF3RUFBYU5UTUZFd0hRWURWUjBPQkJZRUZPNGkvK1FPM0FyLzdlamNnb1hsVDl5YjAxSXdNQjhHQTFVZEl3UVkKTUJhQUZPNGkvK1FPM0FyLzdlamNnb1hsVDl5YjAxSXdNQThHQTFVZEV3RUIvd1FGTUFNQkFmOHdEUVlKS29aSQpodmNOQVFFTEJRQURnZ0VCQUR5cVRPMGNxUVFiUGpMMjFPOU1QS3UxZTFDaVBCNHZqOS9iTHNlV1RlOUliYzdLCldjSXh1YThaTW5Ybm9KNTZmd3V0Tkx2aE5JNWdtdExqS1J5MEVTOEpmYlFVQUc4MXBKUHByd21jc0F3MmZUMTIKR1NzYVByRmIvL3hSVDlrbmhQcUFjNHpDWEV6VEFTdnNtaXRpcFRjSi9HZXlDNmpkakRranh0dFZPRGpQTGZDegpuSlFpeWxIZUJGd05nQml4SVp5Q1FDT2owd1BUNEljMDFnY1R5U2dTazFhSFNXaDVya1VGN1BNUjVxLzlZUXdvCnh4eDJDT2F1TGVDc0dlenFudDRZZzVvK3p2K1FYcm9uUlh1VVlzSVpyUnhtRDNEbDJ4akEveUMvUnpRN0NuZlQKd0xYT1U1VDltcHdFbVlrTnp1dDZGNkJmWkROSkdlKzE3eDUrUEtvPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0t
+
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-    # - secretName: chart-example-tls
-    #   hosts:
-    #     - chart-example.local
-
-# -- Expose the service via gateway-api HTTPRoute
-# Requires Gateway API resources and suitable controller installed within the cluster
-# (see: https://gateway-api.sigs.k8s.io/guides/)
-httpRoute:
-  # HTTPRoute enabled.
-  enabled: false
-  # HTTPRoute annotations.
-  annotations: {}
-  # Which Gateways this Route is attached to.
-  parentRefs:
-  - name: gateway
-    sectionName: http
-    # namespace: default
-  # Hostnames matching HTTP header.
-  hostnames:
-  - chart-example.local
-  # List of rules and filters applied.
-  rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /headers
-  #   filters:
-  #   - type: RequestHeaderModifier
-  #     requestHeaderModifier:
-  #       set:
-  #       - name: My-Overwrite-Header
-  #         value: this-is-the-only-value
-  #       remove:
-  #       - User-Agent
-  # - matches:
-  #   - path:
-  #       type: PathPrefix
-  #       value: /echo
-  #     headers:
-  #     - name: version
-  #       value: v2
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
-
-# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
-# Additional volumes on the output Deployment definition.
-volumes: []
-  # - name: foo
-  #   secret:
-  #     secretName: mysecret
-  #     optional: false
-
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-  # - name: foo
-  #   mountPath: "/etc/foo"
-  #   readOnly: true
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
+  name: tls-ingress
+  host: myapp.example.com
